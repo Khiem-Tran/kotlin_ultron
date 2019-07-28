@@ -1,0 +1,27 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.2.71'
+}
+
+group 'gin.kotlin.code'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "io.dropwizard:dropwizard-core:1.3.12"
+    compile "com.hubspot.dropwizard:dropwizard-guice:1.3.5.0"
+    compile "com.hubspot.slack:slack-base:1.2"
+    compile "com.hubspot.slack:slack-java-client:1.2"
+    compile "com.hubspot.slack:slack-client:1.2"
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
