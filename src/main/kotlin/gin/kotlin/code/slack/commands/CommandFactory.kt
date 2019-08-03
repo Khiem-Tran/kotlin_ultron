@@ -1,31 +1,35 @@
 package gin.kotlin.code.slack.commands
 
 import com.github.seratch.jslack.api.model.Message
-import com.google.inject.Inject
-import gin.kotlin.code.slack.Client
+import org.koin.core.KoinComponent
+import org.koin.core.inject
+import org.koin.core.qualifier.named
 
 data class CommandInfo(val type : String, val text : String = "")
 
-class CommandFactory {
+class CommandFactory : KoinComponent {
 
-    @Inject
-    lateinit var client : Client
-
-    private val botName = "<@U1KH8H9FW>"
+    private val botName = "<@ULMTY0Z9P>"
     private val regex = Regex("""$botName\s(\w*)\s*(\w*)""")
 
-    private val commands = mapOf (
-        "hello" to HelloCommand(),
-        "fwd" to ForwardCommand(),
-        "stop" to StopCommand(),
-        "anonymous" to AnonymousCommand()
+    private val helloCommand : Command by inject(named("hello"))
+    private val forwardCommand : Command by inject(named("forward"))
+    private val stopCommand : Command by inject(named("stop"))
+    private val anonymousCommand : Command by inject(named("anonymous"))
+
+
+    private val commands : Map<String, Command> = mapOf (
+        "hello" to helloCommand,
+        "fwd" to forwardCommand,
+        "stop" to stopCommand,
+        "anonymous" to anonymousCommand
     )
 
-    val topics = mapOf<String, Set<String>>()
+    val topics = mutableMapOf<String, Set<String>>()
 
     fun exec(message : Message) {
         val info = parse(message)
-        commands[info.type]?.exec(client, this, info, message)
+        commands[info.type]?.exec(info, message)
     }
 
     private fun parse(message: Message) : CommandInfo {

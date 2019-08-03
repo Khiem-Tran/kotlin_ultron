@@ -1,16 +1,15 @@
 package gin.kotlin.code
 
-import com.google.inject.Inject
 import gin.kotlin.code.slack.Client
 import gin.kotlin.code.handlers.MessageHandler
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-class ManagedServices : Managed {
+class ManagedServices : Managed, KoinComponent {
 
-    @Inject
-    lateinit var client : Client
+    val client by inject<Client> ()
 
-    @Inject
-    lateinit var handler: MessageHandler
+    val handler by inject<MessageHandler>()
 
     override fun start() {
         handler.start()

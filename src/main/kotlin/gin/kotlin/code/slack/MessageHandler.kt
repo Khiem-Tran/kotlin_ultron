@@ -3,21 +3,20 @@ package gin.kotlin.code.handlers
 import com.github.seratch.jslack.api.model.Message
 import com.github.seratch.jslack.api.rtm.RTMMessageHandler
 import com.google.gson.Gson
-import com.google.inject.Inject
 import gin.kotlin.code.slack.Client
 import gin.kotlin.code.slack.commands.CommandFactory
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-class MessageHandler : RTMMessageHandler {
+class MessageHandler : RTMMessageHandler, KoinComponent {
 
     private val gson = Gson()
 
-    @Inject
-    lateinit var factory : CommandFactory
+    private val factory by inject<CommandFactory>()
 
-    @Inject
-    lateinit var client : Client
+    private val client by inject<Client>()
 
-
+    private val supportedTypes = setOf("hello", "message")
 
     fun start() {
         client.register(this)
@@ -25,7 +24,6 @@ class MessageHandler : RTMMessageHandler {
 
     override fun handle(msg: String) {
         val message = gson.fromJson(msg, Message::class.java)
-        if (message.type == "user_typing") return
-        factory.exec(message)
+        if (message.type in supportedTypes) factory.exec(message)
     }
 }

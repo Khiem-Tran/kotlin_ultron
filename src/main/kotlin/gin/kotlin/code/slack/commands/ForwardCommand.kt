@@ -2,12 +2,17 @@ package gin.kotlin.code.slack.commands
 
 import com.github.seratch.jslack.api.model.Message
 import gin.kotlin.code.slack.Client
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-class ForwardCommand : Command {
+class ForwardCommand : Command, KoinComponent {
 
-    override fun exec(client: Client, commandFactory: CommandFactory, info: CommandInfo, message : Message) {
-        commandFactory.topics[info.text] ?: commandFactory.topics.plus(Pair(info.text, setOf()))
-        commandFactory.topics[info.text]!!.plus(message.user)
+    private val client by inject<Client>()
+    private val factory by inject<CommandFactory>()
+
+    override fun exec(info: CommandInfo, message : Message) {
+        factory.topics.putIfAbsent(info.text, mutableSetOf())
+        factory.topics[info.text]?.plus(message.user)
         client.sendMessage("Forwarding set for ${info.text}", message.channel)
     }
 }
